@@ -116,8 +116,8 @@ Pattern heuristics:
 | Diff pattern | Likely cause | Action |
 |---|---|---|
 | Thin red rim 1–2px on glyph outlines only | Antialiasing noise | Ignore — accept |
-| Same text appears twice (ghost copy) | Horizontal / vertical translation — position or padding mismatch | Investigate; structural |
-| Solid vertical or horizontal band on right or bottom edge | Width or height difference — often HUG vs pinned width | Check `primaryAxisSizingMode`; structural |
+| Same text appears twice (ghost copy) | Horizontal / vertical translation — position or padding mismatch | Identify the offset axis from the diff first, then compare `padding-block`/`padding-inline` and margins against Figma's spacing; structural |
+| Solid vertical or horizontal band on right or bottom edge | Width or height difference — often HUG vs pinned width | Check `primaryAxisSizingMode`; for ambiguous bands, `--debug-selectors` to compare DOM bbox to Figma `absoluteBoundingBox`; structural |
 | Rounded outline misaligned | `border-radius` or box-model semantics mismatch | Compare MCP `rounded-N` to code; structural |
 | Scattered red across a uniform color region | Color mismatch — token resolution gone wrong | Check Figma Variables → CSS variable binding |
 | Large red mass over text glyphs | Wrong font build (e.g. Google Fonts Inter vs Figma's rsms.me Inter Variable) | Swap to Figma's font build in preview-head.html |
