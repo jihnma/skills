@@ -64,7 +64,10 @@ Do not silently install packages, create config, or persist secrets.
 For every `INSTANCE` descendant of the target:
 
 1. Capture `componentId` and `componentSetId` (if applicable).
-2. Glob `**/*.figma.tsx` (scope by `figma.config.json#mappingScope`) for `figma.connect(...)` URLs containing `node-id=<componentId>` or `node-id=<componentSetId>`.
+2. Glob both locations (scope by `figma.config.json#mappingScope`):
+   - `**/*.figma.tsx` for `figma.connect(...)` calls.
+   - `**/*.stories.@(tsx|jsx)` that import from `@figma/code-connect` (mappings declared inside `parameters.design.props` + `examples`).
+   Match URLs containing `node-id=<componentId>` or `node-id=<componentSetId>` in either location. The two are equivalent Code Connect sources — `figma client connect publish` reads both.
 3. Build reuse table: `[{ figmaInstance, mappedReactComponent | null, propsFromInstance }]`.
 
 A mapped instance **must** be implemented using the mapped component — no hand-rolled fallback.
@@ -106,6 +109,24 @@ No config-based convention. Infer from the project's design system:
 - For a `COMPONENT_SET` input, fetch the child variant node ids once (`GET /v1/files/<fileId>/nodes?ids=<setId>`) and bind each generated story to its child. An optional matrix overview story may point at the `COMPONENT_SET` itself, but only if its rendered grid matches Figma's set-canvas layout.
 - CSF3 format.
 
+**Code Connect convention (where mappings live)** — match the project, don't mix:
+
+1. **Detect** by inspecting the step-2 globs:
+   - Existing `**/*.stories.@(tsx|jsx)` files import `@figma/code-connect` → **in-story** convention.
+   - Existing `**/*.figma.tsx` files only → **sibling-file** convention.
+   - Both present → ask the user once, then record the answer under `## Code Connect convention` in `CLAUDE.md` so later calls (and other design skills) stay consistent.
+   - Neither (green-field) → **default to in-story**. Figma's Storybook integration docs frame in-story `parameters.design` as the Storybook-native path, and this skill always emits `.stories.tsx`, so Storybook is always present.
+2. **In-story emit** — inside the story's `parameters.design`, add:
+   - `props` translated from the variant's `componentProperties`:
+     - VARIANT → `figma.enum('<FigmaPropName>', { ... })`.
+     - TEXT → `figma.string('<FigmaPropName>')`.
+     - BOOLEAN → `figma.boolean('<FigmaPropName>')`.
+     - INSTANCE_SWAP, or anything else → emit the prop with a `// TODO: map with figma.instance() / figma.children() etc.` comment. Don't silently omit (loses discoverability) and don't fall back to sibling-file (breaks consistency).
+   - `examples: [<RenderFn>]` referencing the same render function the stories use, so Figma Dev Mode shows working code.
+   - Import `figma` from `@figma/code-connect` at the top of the story file.
+3. **Sibling-file emit** — keep current behaviour. Story carries `parameters.design.url` only; surface adding a `<ComponentName>.figma.tsx` as a separate follow-up task (don't write it inside this skill call).
+4. **Publishing is out of scope.** This skill never runs `figma client connect publish` — that's a manual or CI step the user controls.
+
 **Out of scope here:** edge-case stories (long-text wrapping, loading / disabled states, a11y focus, responsive breakpoints) are valid but the skill does not auto-generate them — they have no Figma counterpart and belong to Storybook interaction / snapshot / a11y tests. If the user later adds such stories and wants explicit opt-out from this skill's auto-verify, they set `parameters.figmaVrt: false` on the story.
 
 ### 5. Auto-verify (skipped if `--no-verify`)
@@ -141,7 +162,7 @@ No config-based convention. Infer from the project's design system:
 
 ## Rules
 
-- **Code Connect lookup before markup.** Non-negotiable.
+- **Code Connect lookup before markup.** Non-negotiable. Lookup checks both `**/*.figma.tsx` and `**/*.stories.@(tsx|jsx)` that import `@figma/code-connect`.
 - **Mapped components used as-is.** No hand-rolled fallback for mapped instances.
 - **Naming and placement follow the project's design system** — AI infers from existing components; there is no config-based convention.
 - **Auto-verify requires Storybook + proper preview config + devDeps.** Without them, exit step 5 cleanly.
@@ -163,6 +184,7 @@ No config-based convention. Infer from the project's design system:
 | VRT helper exit 1 (fail) | Report fail with diff description. User iterates. |
 | Dim mismatch from helper | Almost always wrong `--viewport`; helper prints both sizes. |
 | TS / lint errors in generated code | Surface; offer to fix in conversation. |
+| Mixed Code Connect conventions detected (both `.figma.tsx` and in-story) | Ask the user once; record answer in `CLAUDE.md` under `## Code Connect convention`. |
 
 ## Output
 
