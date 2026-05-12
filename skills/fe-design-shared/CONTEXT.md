@@ -5,7 +5,7 @@ fe-design-* skills generate React components from Figma designs and verify the r
 ## Language
 
 **Code Connect**:
-Figma's mapping mechanism between Figma components and React components, declared via `*.figma.tsx` files containing `figma.connect(...)`. Lookup is non-negotiable before writing markup. See [CODE-CONNECT-LOOKUP](./docs/shared/CODE-CONNECT-LOOKUP.md).
+Figma's mapping mechanism between Figma components and React components, declared via `*.figma.tsx` files containing `figma.connect(...)`. Lookup is non-negotiable before writing markup. See [CODE-CONNECT-LOOKUP](./CODE-CONNECT-LOOKUP.md).
 _Avoid_: figma binding, figma mapping
 
 **VRT**:
@@ -40,9 +40,3 @@ Skill that compares an existing component's Storybook rendering against its Figm
 > **User:** "Implement the `Button/primary/large` variant from Figma."
 > **AI:** "Walking the Figma node — it's a `Button` instance. Checking **Code Connect** — found a mapping in `src/ui/Button.figma.tsx`. The **reuse table** says: use the existing `<Button variant='primary' size='lg'>`, no new markup needed. Writing component + story. Running **VRT** via `vrt.mjs` — diff 0.0084 (0.84%), under threshold 0.015 (1.5%). Diff image shows antialiasing only on text edges. Done."
 
-## Flagged ambiguities
-
-- `audit-core`, `session`, `finding`, `fixHint`, `tier` — terms from the previous audit-core architecture. Removed because:
-  - **audit-core**: no custom engine — comparison runs via `npx pixelmatch`.
-  - **session / finding / fixHint**: no self-heal loop, no structured engine output — runs are stateless, AI iterates via conversation when VRT fails.
-  - **tier**: Storybook is a hard prerequisite for verify, so the 0/1/2 capability gating no longer applies.

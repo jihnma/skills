@@ -6,8 +6,10 @@ Frontend engineering skills for AI agents.
 
 ## Skills
 
-- `fe-design-implement` — Turn one Figma component (or variant set) into a React component + Storybook story, then auto-verify visual match against the design.
-- `fe-design-verify` — VRT check: compare an existing component's Storybook rendering against its Figma source. Standalone, does not modify code.
+- [`fe-design-implement`](./skills/fe-design-implement/SKILL.md) — Turn one Figma component (or variant set) into a React component + Storybook story, then auto-verify visual match.
+- [`fe-design-verify`](./skills/fe-design-verify/SKILL.md) — VRT check: compare an existing component's Storybook rendering against its Figma source. Standalone.
+
+Shared context, ADRs, and reference docs for the fe-design family live next to the skills, under [`skills/fe-design-shared/`](./skills/fe-design-shared/) (`CONTEXT.md`, `FIGMA-CONFIG.md`, `CODE-CONNECT-LOOKUP.md`, `adr/`). It is not a skill — `link-skills.sh` ignores it because it has no `SKILL.md`.
 
 ## Install
 
@@ -17,45 +19,15 @@ npx skills@latest add jihnma/skills
 
 Works with Claude Code, Cursor, GitHub Copilot, Windsurf, OpenCode, and other agents.
 
-## Requirements (user project)
-
-- `figma.config.json` with `fileId` (single-package) or a `files` alias map (monorepo). See [docs/shared/FIGMA-CONFIG.md](./docs/shared/FIGMA-CONFIG.md).
-- Figma access token in `FIGMA_ACCESS_TOKEN` env var.
-- Code Connect — uses either standalone `*.figma.tsx` files or inline `parameters.design.url` in `*.stories.tsx`.
-- Storybook (required for `fe-design-verify`):
-  - `<style>body { margin: 0; }</style>` in `.storybook/preview-head.html`
-  - `parameters.layout: 'fullscreen'` as the default in `.storybook/preview.ts`
-  - `<link>` (or `@font-face`) for the design's font family in `preview-head.html` — otherwise text-glyph noise dominates VRT diffs
-- VRT dev deps:
-  ```sh
-  pnpm add -D sharp playwright pixelmatch pngjs
-  pnpm approve-builds   # pnpm 11: approve sharp's native build
-  npx playwright install chromium
-  ```
-
 ## Development
 
-End users install via `skills.sh` (file copy). Authors of this repo should symlink the skills instead, so edits in `skills/` are live:
+Authors of this repo should symlink the skills into `~/.claude/skills/` so edits are live:
 
 ```sh
 ./scripts/link-skills.sh
 ```
 
-Safe to re-run after pulling changes. Symlinks land at `~/.claude/skills/fe-design-*`.
-
-## Architecture
-
-- [`CONTEXT.md`](./CONTEXT.md) — domain language and load-bearing terms.
-- [`docs/adr/`](./docs/adr/) — architectural decisions:
-  1. No published package; compose existing CLIs.
-  2. Two atomic skills; orchestration deferred.
-  3. Storybook required for verify.
-  4. AI-inferred component naming and file placement.
-  5. Bundled VRT helper script supplements compose-CLIs.
-  6. VRT requires a 1:1 Figma ↔ story mapping.
-  7. MCP `get_design_context` output is normative for CSS structure.
-- [`skills/fe-design-implement/SKILL.md`](./skills/fe-design-implement/SKILL.md) — the implement skill.
-- [`skills/fe-design-verify/`](./skills/fe-design-verify/) — verify skill and the bundled [`vrt.mjs`](./skills/fe-design-verify/vrt.mjs) helper.
+End users install via `skills.sh`, which copies files — no symlink needed.
 
 ## License
 
