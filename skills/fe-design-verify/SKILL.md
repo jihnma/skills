@@ -65,11 +65,11 @@ This skill does not modify source code. The only files it writes are diff artifa
 1. Parse `fileId` and `nodeId` from the URL (or use the ID directly). Normalize URL form `123-456` to API form `123:456`.
 2. Find the React component:
    - If the project uses standalone `*.figma.tsx`: glob `**/*.figma.tsx` (scope by `figma.config.json#mappingScope`) for `figma.connect(...)` URLs containing `node-id=<nodeId>`.
-   - If the project uses inline `parameters.design.url` inside `*.stories.tsx`: glob `**/*.stories.tsx` instead and match against that URL.
+   - If the project uses in-story Code Connect (Storybook-native path): glob `**/*.stories.@(tsx|jsx)` and match against `parameters.design.url`. Whether the story also carries `props` + `examples` from `@figma/code-connect` is irrelevant to VRT — only the URL is consumed here.
 3. Read the adjacent `.stories.tsx`; derive `storyId` = lowercase + hyphenate the title, then append `--<variant>` for the first or specified variant.
 
 **File-path input:**
-1. Read the adjacent `.figma.tsx`, or read `parameters.design.url` in the adjacent `.stories.tsx`. Extract Figma URL → `fileId` + `nodeId`. If none: stop with `No Code Connect mapping found.`
+1. Read the adjacent `.figma.tsx`, or read `parameters.design.url` in the adjacent `.stories.@(tsx|jsx)` (in-story Code Connect lives at the same URL key). Extract Figma URL → `fileId` + `nodeId`. If none: stop with `No Code Connect mapping found.`
 2. Read the adjacent `.stories.tsx`; derive `storyId` as above.
 
 **Required: 1:1 mapping check.** Before continuing, verify the story being tested has a Figma counterpart:
@@ -180,7 +180,7 @@ If text-glyph noise dominates and you can't load the design font, the per-compon
 | Reason | Action |
 |---|---|
 | Storybook unreachable | Print `pnpm storybook` and exit. |
-| Mapping missing (Figma input has no matching `.figma.tsx` or `.stories.tsx`) | Tell the user to add a Code Connect mapping or `parameters.design`. Exit. |
+| Mapping missing (Figma input has no matching `.figma.tsx` or `.stories.@(tsx|jsx)`) | Tell the user to add a Code Connect mapping or `parameters.design`. Exit. |
 | Story has no `parameters.design.url` (and no `.figma.tsx`) | Exit with "VRT not applicable; out of scope." Do not compare against a similar variant. |
 | Story has `parameters.figmaVrt: false` | Skip silently and report "opted out of VRT". |
 | `.stories.tsx` missing (path input) | Print "create a story file" and exit. |
