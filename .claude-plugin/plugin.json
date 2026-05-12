@@ -1,0 +1,7 @@
+{
+  "name": "jihnma-skills",
+  "skills": [
+    "./skills/fe-design-implement",
+    "./skills/fe-design-verify"
+  ]
+}
