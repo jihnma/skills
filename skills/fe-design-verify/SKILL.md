@@ -1,6 +1,7 @@
 ---
 name: fe-design-verify
 description: Compare a React component's Storybook rendering against its Figma source via VRT (pixel diff + qualitative diff-image read). Standalone — does not modify code. Input is auto-detected as Figma URL/node-id or a component file path. Use when the user asks "does this match the design?" or "verify Button.tsx".
+license: MIT
 ---
 
 # fe-design-verify
