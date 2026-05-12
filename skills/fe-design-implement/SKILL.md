@@ -94,11 +94,13 @@ No config-based convention. Infer from the project's design system:
   - Any of: non-SOLID stroke, `individualStrokeWeights`, `dashPattern` present → write literal `border` (or `border-image` for gradients) and note in the report that `box-shadow: inset` couldn't express the design.
   - Otherwise (CENTER, OUTSIDE) → literal MCP CSS.
 
-  Like `primaryAxisSizingMode`, this is one of a small closed set of REST-checked fields where MCP silently drops information needed for structurally correct CSS. Not a license for arbitrary REST round-trips.
-- **Check `primaryAxisSizingMode` before pinning width.** MCP outputs `w-[N]` for HUG nodes where `N` is the rendered text+padding result, not a design-intended fixed width. Fetch the node via REST (`GET /v1/files/<fileId>/nodes?ids=<nodeId>`) and inspect `primaryAxisSizingMode`:
-  - `AUTO` (HUG) → omit `width`; let content drive.
-  - `FIXED` → honor the width literally.
-  - `FILL` → `width: 100%` or parent-context-driven.
+  Like `layoutSizingHorizontal` / `layoutSizingVertical`, this is one of a small closed set of REST-checked fields where MCP silently drops information needed for structurally correct CSS. Not a license for arbitrary REST round-trips.
+- **Check `layoutSizingHorizontal` / `layoutSizingVertical` before pinning width / height.** MCP outputs `w-[N]` / `h-[N]` based on the rendered result regardless of whether the node is HUG (content-driven), FIXED, or FILL — the sizing intent is lost. Fetch the node via REST (`GET /v1/files/<fileId>/nodes?ids=<nodeId>`) and inspect both fields independently (a button is commonly `FIXED` height + `HUG` width, or `HUG` on both axes):
+  - `HUG` → omit the corresponding `width` / `height`; let content drive (text + padding does the work — `padding-block` for vertical HUG, `padding-inline` for horizontal HUG).
+  - `FIXED` → honor the dimension literally.
+  - `FILL` → `width: 100%` / `height: 100%` (or `flex: 1` inside an auto-layout parent — parent-context-driven).
+
+  Prefer `layoutSizing*` over the older `primaryAxisSizingMode` / `counterAxisSizingMode`: the latter depend on the parent's layout direction, forcing per-node reasoning about which axis is "primary". `layoutSizingHorizontal` is always width, `layoutSizingVertical` is always height.
 - **When updating an existing component**, do not silently preserve a divergent structure. If the existing CSS uses `height: 40px` but MCP says `padding-block: 10px`, surface the divergence in the report ("existing button.css uses fixed height; Figma uses padding-block — equivalent now but diverges if line-height changes; refactor? Y/n") and let the user decide. Don't refactor without asking, don't silently propagate the legacy pattern either.
 
 **`<ComponentName>.stories.tsx`**:
