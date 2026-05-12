@@ -1,6 +1,7 @@
 ---
 name: fe-design-implement
 description: Convert a single Figma component (or component set) into a React component + Storybook story, then auto-verify visual match against the Figma source via the bundled VRT helper. Use when the user pastes a Figma node URL/ID and asks to implement it. Outputs file paths and a diff ratio.
+license: MIT
 ---
 
 # fe-design-implement
