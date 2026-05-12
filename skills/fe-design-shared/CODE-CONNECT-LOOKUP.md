@@ -10,9 +10,9 @@ For the target Figma node and each of its descendants:
 
 1. Identify every child whose Figma node `type` is `INSTANCE`.
 2. Capture its `componentId`. If the instance is a variant of a component set, also capture `componentSetId`.
-3. Find the existing React component for that Figma component. Two mapping styles, both supported:
-   - **Standalone mapping** — glob `**/*.figma.tsx` whose `figma.connect(...)` first argument (URL) contains `node-id=<componentId>` or `node-id=<componentSetId>`.
-   - **Inline mapping** — glob `**/*.stories.tsx` whose `parameters.design.url` contains the same `node-id=...`.
+3. Find the existing React component for that Figma component. Two mapping conventions, both supported (see CONTEXT.md for terminology):
+   - **sibling-file** — glob `**/*.figma.tsx` whose `figma.connect(...)` first argument (URL) contains `node-id=<componentId>` or `node-id=<componentSetId>`.
+   - **in-story** — glob `**/*.stories.tsx` whose `parameters.design.url` contains the same `node-id=...`.
 4. Record per instance:
    - **Hit** → the mapping file path and the imported React component. Derive prop values from the instance's `componentProperties` overrides (e.g. variant `"outline"`, size `"md"`).
    - **Miss** → record `mappedReactComponent: null`. Inventing markup for this subtree is allowed *only* if no mapping is found.

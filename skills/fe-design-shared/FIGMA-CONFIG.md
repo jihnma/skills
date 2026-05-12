@@ -60,7 +60,7 @@
 | `tokenEnv` | string | either | Env var name for Figma access token. Default `"FIGMA_ACCESS_TOKEN"`. |
 | `cacheDir` | string | either | Default `.fe-design-cache`. `vrt.mjs` writes `<cacheDir>/diff/{figma,code,diff}.png` (overwritten on each run, per-package in monorepos). Should be in `.gitignore`. |
 | `tokensPath` | string | per-package | Path to design tokens file. Default `"src/ui/tokens.ts"`. |
-| `vrtThreshold` | number | per-package | Diff ratio threshold (0–1) for VRT. Default `0.05` for small components; lower to `0.015` for matrix/page stories. |
+| `vrtThreshold` | number | per-package | Diff ratio threshold (0–1) for VRT. Default `0.05`. Calibration by story size: see `fe-design-verify` SKILL.md `## Threshold guidance`. |
 | `storybookPort` | number | per-package | Local Storybook port. Default `6006`. |
 | `mappingScope` | `"monorepo" \| "package"` | root | Default `"monorepo"` if root has `files`, else `"package"`. |
 | `codeConnect` | object | per-package | Code Connect parser config. |
