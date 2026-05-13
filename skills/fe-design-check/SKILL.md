@@ -1,10 +1,10 @@
 ---
-name: fe-design-verify
+name: fe-design-check
 description: Compare a React component's Storybook rendering against its Figma source via VRT (pixel diff + qualitative diff-image read). Standalone — does not modify code. Input is auto-detected as Figma URL/node-id or a component file path.
 license: MIT
 ---
 
-# fe-design-verify
+# fe-design-check
 
 VRT check. One Storybook story vs. **one specific Figma node**. Reports diff ratio and a qualitative read of the diff image. Does not modify code.
 
@@ -24,7 +24,7 @@ If a story should never be VRT-tested (deliberately), opt out with `parameters.f
 
 - "Verify this matches the Figma design"
 - "I edited Button.tsx — is it still aligned with the design?"
-- Called internally by `fe-design-implement` as its auto-verify step.
+- Called internally by `fe-design-create` as its auto-verify step.
 
 ## Inputs
 
@@ -79,7 +79,7 @@ The exception: matrix / overview stories that intentionally compare against the 
 ### 2. Run the VRT helper
 
 ```sh
-node ~/.claude/skills/fe-design-verify/vrt.mjs \
+node ~/.claude/skills/fe-design-check/vrt.mjs \
   --figma-file=<fileId> \
   --figma-node=<variantNodeId> \
   --story-url="http://localhost:<port>/iframe.html?id=<storyId>&viewMode=story" \
@@ -123,12 +123,12 @@ Pattern heuristics:
 
 Anything labeled "structural" overrides the ratio: **fail even when ratio < threshold**.
 
-Threshold is a floor, not a ceiling. **VRT pass is necessary, not sufficient** — pixels can match while the box-model is semantically wrong (see ADR-0007). If `fe-design-implement` generated the code, the MCP-literal CSS rule already guards against this; for code written by hand, inspect `getComputedStyle` against Figma's `paddingTop/Bottom`, `cornerRadius`, `itemSpacing`, `strokeWeight` when in doubt.
+Threshold is a floor, not a ceiling. **VRT pass is necessary, not sufficient** — pixels can match while the box-model is semantically wrong (see ADR-0007). If `fe-design-create` generated the code, the MCP-literal CSS rule already guards against this; for code written by hand, inspect `getComputedStyle` against Figma's `paddingTop/Bottom`, `cornerRadius`, `itemSpacing`, `strokeWeight` when in doubt.
 
 **When the diff cause is ambiguous**, re-run vrt.mjs with `--debug-selectors='<csv>'` to dump `getBoundingClientRect` + computed `width / height / padding / margin / border / box-sizing` for the listed elements. Use this in place of an external DOM-inspection step:
 
 ```sh
-node ~/.claude/skills/fe-design-verify/vrt.mjs ... \
+node ~/.claude/skills/fe-design-check/vrt.mjs ... \
   --debug-selectors='.sidebar,.dashboard__main-content,.button.button--md'
 ```
 

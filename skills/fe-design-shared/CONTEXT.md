@@ -13,11 +13,11 @@ Two equivalent places a `figma.connect(...)` mapping can live. **sibling-file**:
 _Avoid_: Standalone mapping, Inline mapping (older names — superseded)
 
 **VRT**:
-Visual regression testing. Pixel-level comparison between a Figma node export and a Storybook screenshot of the corresponding React component, producing a diff ratio + diff image. **Applies only to stories with a 1:1 Figma node mapping** (`parameters.design.url` or a `.figma.tsx`). Stories without a Figma counterpart (edge cases, loading states, a11y) are out of scope — they belong to Storybook interaction/snapshot/a11y tests. **Necessary but not sufficient** for design fidelity — pixels can match while the box-model is semantically wrong (e.g. `height` substituted for `padding-block`). Structural fidelity is enforced upstream by treating MCP `get_design_context` output as normative (see ADR-0007), not by VRT itself. Threshold lives in `figma.config.json#vrtThreshold`; calibration by story size is in `fe-design-verify` SKILL.md `## Threshold guidance`. Executed via the bundled `vrt.mjs` helper at `skills/fe-design-verify/vrt.mjs`, which wraps `sharp` (flatten transparent Figma PNG on white), `playwright` (custom viewport + `deviceScaleFactor=2` to match Figma `scale=2`), and `pixelmatch` (`threshold: 0.1`, `includeAA: false`) into a single CLI call.
+Visual regression testing. Pixel-level comparison between a Figma node export and a Storybook screenshot of the corresponding React component, producing a diff ratio + diff image. **Applies only to stories with a 1:1 Figma node mapping** (`parameters.design.url` or a `.figma.tsx`). Stories without a Figma counterpart (edge cases, loading states, a11y) are out of scope — they belong to Storybook interaction/snapshot/a11y tests. **Necessary but not sufficient** for design fidelity — pixels can match while the box-model is semantically wrong (e.g. `height` substituted for `padding-block`). Structural fidelity is enforced upstream by treating MCP `get_design_context` output as normative (see ADR-0007), not by VRT itself. Threshold lives in `figma.config.json#vrtThreshold`; calibration by story size is in `fe-design-check` SKILL.md `## Threshold guidance`. Executed via the bundled `vrt.mjs` helper at `skills/fe-design-check/vrt.mjs`, which wraps `sharp` (flatten transparent Figma PNG on white), `playwright` (custom viewport + `deviceScaleFactor=2` to match Figma `scale=2`), and `pixelmatch` (`threshold: 0.1`, `includeAA: false`) into a single CLI call.
 _Avoid_: visual diff, screenshot diff, visual check
 
 **reuse table**:
-Per-target lookup result mapping each Figma `INSTANCE` child to either a known React component (via Code Connect) or null. Built fresh by `fe-design-implement` before generating markup; not persisted.
+Per-target lookup result mapping each Figma `INSTANCE` child to either a known React component (via Code Connect) or null. Built fresh by `fe-design-create` before generating markup; not persisted.
 _Avoid_: mapping table, instance map
 
 **figmaCategoryPath**:
@@ -26,16 +26,16 @@ _Avoid_: figma path, node path
 
 ## Skills
 
-**fe-design-implement**:
+**fe-design-create**:
 Skill that converts a Figma node into a React component (`.tsx`) plus its companion Storybook story (`.stories.tsx`). Auto-runs VRT at the end and reports the diff ratio. No self-heal loop — if VRT fails, the user iterates via conversation. **Component name and file placement are inferred from the project's existing design system**: AI reads how current components are named and located, then follows the same pattern. If no existing pattern is found, AI asks the user once.
 
-**fe-design-verify**:
+**fe-design-check**:
 Skill that compares an existing component's Storybook rendering against its Figma source via VRT. Standalone — does not modify code. Requires Storybook to be running locally.
 
 ## Relationships
 
-- An **fe-design-implement** call produces one `.tsx` + one `.stories.tsx`, then triggers **VRT**.
-- **VRT** depends on **Storybook** running locally with `body { margin: 0 }` in `.storybook/preview-head.html` and `parameters.layout: 'fullscreen'` as default, plus Figma REST `GET /v1/images?scale=2` for the design export. It is executed via the bundled helper: `node ~/.claude/skills/fe-design-verify/vrt.mjs --figma-file=... --figma-node=... --story-url=... --viewport=WxH`.
+- An **fe-design-create** call produces one `.tsx` + one `.stories.tsx`, then triggers **VRT**.
+- **VRT** depends on **Storybook** running locally with `body { margin: 0 }` in `.storybook/preview-head.html` and `parameters.layout: 'fullscreen'` as default, plus Figma REST `GET /v1/images?scale=2` for the design export. It is executed via the bundled helper: `node ~/.claude/skills/fe-design-check/vrt.mjs --figma-file=... --figma-node=... --story-url=... --viewport=WxH`.
 - Every Figma `INSTANCE` child in a target is resolved via **Code Connect** lookup before markup is written; results go into the **reuse table**.
 - **figmaCategoryPath** maps a Figma node to its Storybook story title (and therefore story ID), so VRT can locate the rendered component without extra config. File system placement is inferred separately by AI from the project's existing patterns.
 

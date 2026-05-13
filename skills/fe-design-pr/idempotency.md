@@ -30,7 +30,7 @@ For JIRA-sourced issues, search the repo for PRs whose body contains the JIRA ke
 - Same branch, append new commits (one per re-run, one component per commit).
 - PR body **overwritten** (not appended). Body is "current state of implementation", not a changelog.
 - `refs/uploads/pulls/<N>` ref: **fast-forward** with a new commit whose parent is the current ref tip. Old PNGs stay reachable through history; PR body always embeds the latest sha. No force-push.
-- VRT artifacts on disk (`.fe-design-cache/diff/<Component>/`) overwritten by each fe-design-implement run.
+- VRT artifacts on disk (`.fe-design-cache/diff/<Component>/`) overwritten by each fe-design-create run.
 
 ## `--new-pr` escape hatch
 

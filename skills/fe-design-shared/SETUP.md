@@ -1,6 +1,6 @@
 # Setup
 
-Shared prerequisites for the `fe-design-*` skills. Both `fe-design-implement` and `fe-design-verify` link here from their precheck steps.
+Shared prerequisites for the `fe-design-*` skills. Both `fe-design-create` and `fe-design-check` link here from their precheck steps.
 
 ## Storybook preview config
 

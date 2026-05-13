@@ -29,7 +29,7 @@ In a monorepo, search scope is determined by `figma.config.json#mappingScope`:
 
 ## When to perform the lookup
 
-`fe-design-implement` performs the lookup as step 2 of its workflow, before any markup is written. The result lives in memory for the duration of the call — there is no persistence across invocations.
+`fe-design-create` performs the lookup as step 2 of its workflow, before any markup is written. The result lives in memory for the duration of the call — there is no persistence across invocations.
 
 ## Why
 

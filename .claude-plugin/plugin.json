@@ -1,12 +1,12 @@
 {
   "name": "jihnma-skills",
   "skills": [
-    "./skills/fe-design-implement",
-    "./skills/fe-design-verify",
+    "./skills/fe-design-create",
+    "./skills/fe-design-check",
     "./skills/fe-design-pr"
   ],
   "agents": [
-    "./agents/fe-design-implement-agent.md",
-    "./agents/fe-design-verify-agent.md"
+    "./agents/fe-design-create-agent.md",
+    "./agents/fe-design-check-agent.md"
   ]
 }
