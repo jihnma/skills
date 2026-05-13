@@ -6,9 +6,11 @@ Frontend engineering skills for AI agents.
 
 ## Skills
 
-- [`fe-design-implement`](./skills/fe-design-implement/SKILL.md) — Turn one Figma component (or variant set) into a React component + Storybook story, then auto-verify visual match.
-- [`fe-design-verify`](./skills/fe-design-verify/SKILL.md) — VRT check: compare an existing component's Storybook rendering against its Figma source. Standalone.
-- [`fe-design-pr`](./skills/fe-design-pr/SKILL.md) — Wrap a GitHub or JIRA issue into a PR: parse Figma URLs from the issue, run `fe-design-implement` per component via subagent, then open (or update) the PR with VRT diff images embedded inline.
+| Skill | What it does |
+|---|---|
+| [`fe-design-implement`](./skills/fe-design-implement/SKILL.md) | Turn a Figma component into React + Storybook code, with an automatic visual match check. |
+| [`fe-design-verify`](./skills/fe-design-verify/SKILL.md) | Compare an existing component against its Figma source to confirm they still match. |
+| [`fe-design-pr`](./skills/fe-design-pr/SKILL.md) | Take a GitHub or JIRA issue with Figma links and open a PR with the generated components. |
 
 ## Install
 
