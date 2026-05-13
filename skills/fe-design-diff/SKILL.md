@@ -1,10 +1,10 @@
 ---
-name: fe-design-check
+name: fe-design-diff
 description: Compare a React component's Storybook rendering against its Figma source via VRT (pixel diff + qualitative diff-image read). Standalone — does not modify code. Input is auto-detected as Figma URL/node-id or a component file path.
 license: MIT
 ---
 
-# fe-design-check
+# fe-design-diff
 
 VRT check. One Storybook story vs. **one specific Figma node**. Reports diff ratio and a qualitative read of the diff image. Does not modify code.
 
@@ -79,7 +79,7 @@ The exception: matrix / overview stories that intentionally compare against the 
 ### 2. Run the VRT helper
 
 ```sh
-node ~/.claude/skills/fe-design-check/vrt.mjs \
+node ~/.claude/skills/fe-design-diff/vrt.mjs \
   --figma-file=<fileId> \
   --figma-node=<variantNodeId> \
   --story-url="http://localhost:<port>/iframe.html?id=<storyId>&viewMode=story" \
@@ -128,7 +128,7 @@ Threshold is a floor, not a ceiling. **VRT pass is necessary, not sufficient** �
 **When the diff cause is ambiguous**, re-run vrt.mjs with `--debug-selectors='<csv>'` to dump `getBoundingClientRect` + computed `width / height / padding / margin / border / box-sizing` for the listed elements. Use this in place of an external DOM-inspection step:
 
 ```sh
-node ~/.claude/skills/fe-design-check/vrt.mjs ... \
+node ~/.claude/skills/fe-design-diff/vrt.mjs ... \
   --debug-selectors='.sidebar,.dashboard__main-content,.button.button--md'
 ```
 
@@ -177,7 +177,7 @@ If text-glyph noise dominates and you can't load the design font, the per-compon
 | `.stories.tsx` missing (path input) | Print "create a story file" and exit. |
 | Wrong variant resolved (mismatch obvious in diff) | Re-fetch the right variant node id; re-run. |
 | Helper exit 2 (setup) | Show stderr; common causes: missing devDeps, missing token, sharp build not approved. |
-| Helper exit 1 (vrt fail) | Report fail; user iterates in conversation and re-runs verify. |
+| Helper exit 1 (vrt fail) | Report fail; user iterates in conversation and re-runs the diff. |
 | Dim mismatch | Helper's error includes both sizes — usually wrong `--viewport` or a sub-pixel Figma bbox. |
 
 ## Recommended permission rules (optional hardening)

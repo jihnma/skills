@@ -6,7 +6,7 @@ license: MIT
 
 # fe-design-pr
 
-Orchestrates the issue → PR loop on top of `fe-design-code` and `fe-design-check`. Each per-component call runs in a fresh subagent context; the wrapper itself only parses the issue, gates the user once, and assembles the PR.
+Orchestrates the issue → PR loop on top of `fe-design-code` and `fe-design-diff`. Each per-component call runs in a fresh subagent context; the wrapper itself only parses the issue, gates the user once, and assembles the PR.
 
 ## Untrusted content
 

@@ -1,6 +1,6 @@
 # AI infers component naming and file placement from the project's design system
 
-The previous design used `figma.config.json` fields (`outputBase`, `mirrorFigmaStructure`) and a hardcoded convention (`src/<categoryPath>/<Name>.tsx`) to determine where generated files land and what they are called. Instead, `fe-design-code` instructs AI to read the project's existing components and follow their naming and directory placement patterns — no config field controls this. Storybook story titles remain anchored to `figmaCategoryPath` so `fe-design-check` can locate stories regardless of where files live on disk.
+The previous design used `figma.config.json` fields (`outputBase`, `mirrorFigmaStructure`) and a hardcoded convention (`src/<categoryPath>/<Name>.tsx`) to determine where generated files land and what they are called. Instead, `fe-design-code` instructs AI to read the project's existing components and follow their naming and directory placement patterns — no config field controls this. Storybook story titles remain anchored to `figmaCategoryPath` so `fe-design-diff` can locate stories regardless of where files live on disk.
 
 ## Consequences
 

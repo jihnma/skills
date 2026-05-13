@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// fe-design-check VRT helper.
+// fe-design-diff VRT helper.
 //   node vrt.mjs --figma-file=ID --figma-node=ID --story-url=URL --viewport=WxH
 //                [--ratio-threshold=0.05] [--token-env=FIGMA_ACCESS_TOKEN] [--output=.fe-design-cache/diff]
 // Exit: 0 pass, 1 fail (ratio over threshold), 2 setup error.
