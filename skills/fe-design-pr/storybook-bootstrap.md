@@ -1,6 +1,6 @@
 # Storybook bootstrap
 
-The wrapper auto-starts Storybook in the background if it isn't reachable, then polls until ready. This differs from `fe-design-create`'s "never auto-start" rule — the wrapper exists for unattended issue-to-PR runs where blocking the user on `pnpm storybook &` defeats the purpose. The child skill still gets a reachable Storybook either way; only the lifecycle owner differs.
+The wrapper auto-starts Storybook in the background if it isn't reachable, then polls until ready. This differs from `fe-design-code`'s "never auto-start" rule — the wrapper exists for unattended issue-to-PR runs where blocking the user on `pnpm storybook &` defeats the purpose. The child skill still gets a reachable Storybook either way; only the lifecycle owner differs.
 
 ## Precheck flow
 
@@ -14,7 +14,7 @@ The wrapper auto-starts Storybook in the background if it isn't reachable, then 
 In order:
 1. `packageManager` field in `package.json` (e.g. `"packageManager": "pnpm@9.0.0"` → `pnpm`).
 2. Lockfile at repo root: `pnpm-lock.yaml` → `pnpm`; `yarn.lock` → `yarn`; `package-lock.json` → `npm`; `bun.lockb` → `bun`.
-3. No signal → default `pnpm` (matches fe-design-create's documented expectation).
+3. No signal → default `pnpm` (matches fe-design-code's documented expectation).
 
 ## Spawn command
 
@@ -61,6 +61,6 @@ Run <pm> storybook manually and re-invoke fe-design-pr.
 
 The wrapper does **not** kill Storybook on exit. It persists for subsequent calls (faster startup), and the user can shut it down when done with `pkill -f 'storybook'` or by closing their terminal session. The wrapper reports the spawned PID + log path so the user knows what's running.
 
-## Why not inherit fe-design-create's rule?
+## Why not inherit fe-design-code's rule?
 
-`fe-design-create` is invoked directly by humans pasting a Figma URL — those humans already have Storybook open in the same dev session. The wrapper is invoked unattended on an issue; expecting the user to pre-start Storybook breaks the AFK promise. Different invocation context → different precondition handling.
+`fe-design-code` is invoked directly by humans pasting a Figma URL — those humans already have Storybook open in the same dev session. The wrapper is invoked unattended on an issue; expecting the user to pre-start Storybook breaks the AFK promise. Different invocation context → different precondition handling.

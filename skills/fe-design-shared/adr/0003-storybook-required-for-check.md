@@ -4,7 +4,7 @@ VRT needs a rendered React component to screenshot. We considered Storybook, Pla
 
 ## Consequences
 
-- Projects without Storybook can use `fe-design-create` but not `fe-design-check`. The verify skill detects this at its precheck step and exits with an instruction to start Storybook.
-- `fe-design-create` emits a `.stories.tsx` alongside the `.tsx` so verify can run immediately after generation.
+- Projects without Storybook can use `fe-design-code` but not `fe-design-check`. The verify skill detects this at its precheck step and exits with an instruction to start Storybook.
+- `fe-design-code` emits a `.stories.tsx` alongside the `.tsx` so verify can run immediately after generation.
 - The Storybook URL / story-ID convention is load-bearing — changes to how story IDs are derived (or to Storybook's URL scheme) ripple through verify's lookup logic.
 - Trade-off: lock-in to one render context. Adding Playwright CT or a custom render path later would require a parallel verify path, not a swap.

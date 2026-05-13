@@ -24,7 +24,7 @@ If a story should never be VRT-tested (deliberately), opt out with `parameters.f
 
 - "Verify this matches the Figma design"
 - "I edited Button.tsx — is it still aligned with the design?"
-- Called internally by `fe-design-create` as its auto-verify step.
+- Called internally by `fe-design-code` as its auto-verify step.
 
 ## Inputs
 
@@ -123,7 +123,7 @@ Pattern heuristics:
 
 Anything labeled "structural" overrides the ratio: **fail even when ratio < threshold**.
 
-Threshold is a floor, not a ceiling. **VRT pass is necessary, not sufficient** — pixels can match while the box-model is semantically wrong (see ADR-0007). If `fe-design-create` generated the code, the MCP-literal CSS rule already guards against this; for code written by hand, inspect `getComputedStyle` against Figma's `paddingTop/Bottom`, `cornerRadius`, `itemSpacing`, `strokeWeight` when in doubt.
+Threshold is a floor, not a ceiling. **VRT pass is necessary, not sufficient** — pixels can match while the box-model is semantically wrong (see ADR-0007). If `fe-design-code` generated the code, the MCP-literal CSS rule already guards against this; for code written by hand, inspect `getComputedStyle` against Figma's `paddingTop/Bottom`, `cornerRadius`, `itemSpacing`, `strokeWeight` when in doubt.
 
 **When the diff cause is ambiguous**, re-run vrt.mjs with `--debug-selectors='<csv>'` to dump `getBoundingClientRect` + computed `width / height / padding / margin / border / box-sizing` for the listed elements. Use this in place of an external DOM-inspection step:
 
