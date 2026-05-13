@@ -1,10 +1,10 @@
 ---
-name: fe-design-create
+name: fe-design-code
 description: Convert a single Figma component (or component set) into a React component + Storybook story, then auto-verify visual match against the Figma source via the bundled VRT helper. Use when the user pastes a Figma node URL/ID and asks to implement it. Outputs file paths and a diff ratio.
 license: MIT
 ---
 
-# fe-design-create
+# fe-design-code
 
 Converts one Figma node into code (component + story), then runs VRT to confirm the result matches.
 

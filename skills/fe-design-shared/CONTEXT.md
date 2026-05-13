@@ -17,7 +17,7 @@ Visual regression testing. Pixel-level comparison between a Figma node export an
 _Avoid_: visual diff, screenshot diff, visual check
 
 **reuse table**:
-Per-target lookup result mapping each Figma `INSTANCE` child to either a known React component (via Code Connect) or null. Built fresh by `fe-design-create` before generating markup; not persisted.
+Per-target lookup result mapping each Figma `INSTANCE` child to either a known React component (via Code Connect) or null. Built fresh by `fe-design-code` before generating markup; not persisted.
 _Avoid_: mapping table, instance map
 
 **figmaCategoryPath**:
@@ -26,7 +26,7 @@ _Avoid_: figma path, node path
 
 ## Skills
 
-**fe-design-create**:
+**fe-design-code**:
 Skill that converts a Figma node into a React component (`.tsx`) plus its companion Storybook story (`.stories.tsx`). Auto-runs VRT at the end and reports the diff ratio. No self-heal loop — if VRT fails, the user iterates via conversation. **Component name and file placement are inferred from the project's existing design system**: AI reads how current components are named and located, then follows the same pattern. If no existing pattern is found, AI asks the user once.
 
 **fe-design-check**:
@@ -34,7 +34,7 @@ Skill that compares an existing component's Storybook rendering against its Figm
 
 ## Relationships
 
-- An **fe-design-create** call produces one `.tsx` + one `.stories.tsx`, then triggers **VRT**.
+- An **fe-design-code** call produces one `.tsx` + one `.stories.tsx`, then triggers **VRT**.
 - **VRT** depends on **Storybook** running locally with `body { margin: 0 }` in `.storybook/preview-head.html` and `parameters.layout: 'fullscreen'` as default, plus Figma REST `GET /v1/images?scale=2` for the design export. It is executed via the bundled helper: `node ~/.claude/skills/fe-design-check/vrt.mjs --figma-file=... --figma-node=... --story-url=... --viewport=WxH`.
 - Every Figma `INSTANCE` child in a target is resolved via **Code Connect** lookup before markup is written; results go into the **reuse table**.
 - **figmaCategoryPath** maps a Figma node to its Storybook story title (and therefore story ID), so VRT can locate the rendered component without extra config. File system placement is inferred separately by AI from the project's existing patterns.

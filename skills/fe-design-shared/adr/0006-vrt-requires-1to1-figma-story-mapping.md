@@ -5,7 +5,7 @@ VRT is by definition a "design ↔ implementation matches" check. Without a spec
 ## Consequences
 
 - `fe-design-check` exits with "out of scope" on stories that lack a Figma node mapping. It never falls back to comparing against a "closest" variant.
-- `fe-design-create` generates one story per Figma variant and binds each story's `parameters.design.url` to that specific variant node id. The parent `COMPONENT_SET` URL is not reused across variants.
+- `fe-design-code` generates one story per Figma variant and binds each story's `parameters.design.url` to that specific variant node id. The parent `COMPONENT_SET` URL is not reused across variants.
 - An explicit opt-out flag `parameters.figmaVrt: false` lets users keep a story that intentionally has no Figma equivalent (e.g. an internal debug story) without tripping the precheck.
 - Edge-case stories (long text wrapping, disabled state, etc.) are valuable but the skill does not auto-generate them. The user creates them separately and tests them with non-VRT tools.
 - Trade-off: VRT coverage is strictly narrower than "everything in Storybook." Stories that drift from the design without a corresponding Figma update cannot be auto-flagged by this pipeline — but the alternative (lossy comparison against similar variants) is worse because it normalises false positives.

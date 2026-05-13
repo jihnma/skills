@@ -1,6 +1,6 @@
 # Two atomic skills; orchestration deferred
 
-The previous design had five fe-design-* skills plus a macro `fe-design-create` that bundled issue parsing → code generation → audit self-heal loop → PR creation. We ship only two atoms: `fe-design-create` (one Figma node → `.tsx` + `.stories.tsx` + auto-verify) and `fe-design-check` (component vs. Figma, standalone). Higher-level flows (issue → PR, batch implementation across a Figma page, CI gating) stay as ad-hoc AI composition — when the same sequence repeats three or more times in real use, it gets promoted to a thin wrapper skill that *only* calls the two atoms.
+The previous design had five fe-design-* skills plus a macro `fe-design-code` that bundled issue parsing → code generation → audit self-heal loop → PR creation. We ship only two atoms: `fe-design-code` (one Figma node → `.tsx` + `.stories.tsx` + auto-verify) and `fe-design-check` (component vs. Figma, standalone). Higher-level flows (issue → PR, batch implementation across a Figma page, CI gating) stay as ad-hoc AI composition — when the same sequence repeats three or more times in real use, it gets promoted to a thin wrapper skill that *only* calls the two atoms.
 
 ## Consequences
 
