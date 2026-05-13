@@ -112,17 +112,23 @@ No config-based convention. Infer from the project's design system:
    - Existing `**/*.figma.tsx` files only → **sibling-file** convention.
    - Both present → ask the user once, then record the answer under `## Code Connect convention` in `CLAUDE.md` so later calls (and other design skills) stay consistent.
    - Neither (green-field) → **default to in-story**. Figma's Storybook integration docs frame in-story `parameters.design` as the Storybook-native path, and this skill always emits `.stories.tsx`, so Storybook is always present.
-2. **In-story emit** — inside the story's `parameters.design`, add:
-   - `props` translated from the variant's `componentProperties`:
+2. **In-story emit** — two `parameters.design` placements coexist in the same `.stories.tsx`:
+
+   **a) Meta-level** (on the `default export`) — drives publish + Figma Dev Mode. URL = the `COMPONENT_SET` (or single `COMPONENT`) URL.
+   - `props` translated from the set / component's `componentProperties`:
      - VARIANT → `figma.enum('<FigmaPropName>', { ... })`.
      - TEXT → `figma.string('<FigmaPropName>')`.
      - BOOLEAN → `figma.boolean('<FigmaPropName>')`.
-     - INSTANCE_SWAP, or anything else → emit the prop with a `// TODO: map with figma.instance() / figma.children() etc.` comment. Don't silently omit (loses discoverability) and don't fall back to sibling-file (breaks consistency).
+     - INSTANCE_SWAP, or anything else → emit the prop with a `// TODO: map with figma.instance() / figma.children() etc.` comment. Don't silently omit (loses discoverability).
    - `examples: [<RenderFn>]` referencing the same render function the stories use, so Figma Dev Mode shows working code.
    - Import `figma` from `@figma/code-connect` at the top of the story file.
-   - **Publish caveat.** This emit places `parameters.design` on each story so VRT can target the right variant. `figma connect publish` ignores per-story design parameters and only reads them on the `meta` (default export) — so in-story mappings emitted here are visible to lookup and to Storybook UI but not to `publish`. Projects that need CI-published Code Connect should use the sibling-file convention. See CONTEXT.md and ADR-0009.
-3. **Sibling-file emit** — keep current behaviour. Story carries `parameters.design.url` only; surface adding a `<ComponentName>.figma.tsx` as a separate follow-up task (don't write it inside this skill call).
-4. **Publishing is out of scope.** This skill never runs `figma connect publish` — that's a manual or CI step the user controls.
+
+   **b) Per-story** (on each `Story`) — drives VRT. URL = the specific variant's node id (not the set; see ADR-0006).
+   - `{ type: 'figma', url: '...' }` only — no `props` / `examples` (those live on meta).
+
+3. **Sibling-file emit** — write `<ComponentName>.figma.tsx` next to the component, with `figma.connect(<URL>, { props, examples })` matching the translation in step 2a (URL = `COMPONENT_SET` or single `COMPONENT`). Story carries per-story `parameters.design.url` for VRT (same shape as step 2b). The `.figma.tsx` is the publish source; the story is the VRT source.
+
+4. **Publishing.** Both emits produce publish-ready files. The skill never runs `figma connect publish` itself — that's a manual or CI step the user controls. `fe-design-pr` surfaces a one-line publish hint in the PR body. See ADR-0010.
 
 **Out of scope here:** edge-case stories (long-text wrapping, loading / disabled states, a11y focus, responsive breakpoints) are valid but the skill does not auto-generate them — they have no Figma counterpart and belong to Storybook interaction / snapshot / a11y tests. If the user later adds such stories and wants explicit opt-out from this skill's auto-verify, they set `parameters.figmaVrt: false` on the story.
 
@@ -193,7 +199,7 @@ No config-based convention. Infer from the project's design system:
 ## Output
 
 - Stdout (markdown): file paths, diff ratio, qualitative description, verdict.
-- Disk: 2 generated source files; `.fe-design-cache/diff/{figma,code,diff}.png`.
+- Disk: 2 generated source files (component + story) for in-story convention; 3 (component + story + `<ComponentName>.figma.tsx`) for sibling-file. Plus `.fe-design-cache/diff/{figma,code,diff}.png`.
 
 ## Recommended permission rules (optional hardening)
 
