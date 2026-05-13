@@ -8,9 +8,9 @@ Frontend engineering skills for AI agents.
 
 | Skill | What it does |
 |---|---|
-| [`fe-design-code`](./skills/fe-design-code/SKILL.md) | Turn a Figma component into React + Storybook code with an auto visual check. |
-| [`fe-design-check`](./skills/fe-design-check/SKILL.md) | Compare an existing component against its Figma source to confirm they still match. |
-| [`fe-design-pr`](./skills/fe-design-pr/SKILL.md) | Take a GitHub or JIRA issue with Figma links and open a PR with the generated components. |
+| [`fe‑design‑code`](./skills/fe-design-code/SKILL.md) | Turn a Figma component into React + Storybook code with an auto visual check. |
+| [`fe‑design‑check`](./skills/fe-design-check/SKILL.md) | Compare an existing component against its Figma source to confirm they still match. |
+| [`fe‑design‑pr`](./skills/fe-design-pr/SKILL.md) | Take a GitHub or JIRA issue with Figma links and open a PR with the generated components. |
 
 ## Install
 
