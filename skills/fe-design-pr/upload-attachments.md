@@ -12,7 +12,42 @@ Reversing the order leaves the PR with broken image links if the ref push fails.
 
 ## Helper
 
-`upload-attachments.mjs` (this directory) — single entry point. Takes `--pr <N> --component <Name> <figma.png> <code.png> <diff.png>` repeatedly (one invocation per re-run, batched across all components). Prints the chosen blob SHAs as JSON for the wrapper to template into the body.
+`upload-attachments.mjs` (this directory) — single entry point. **Run once per wrapper invocation, batched across all components in this run.**
+
+### Exact invocation
+
+```sh
+node ${CLAUDE_PLUGIN_ROOT}/skills/fe-design-pr/upload-attachments.mjs \
+  --owner <O> --repo <R> --pr <N> \
+  --component <ComponentName>:<figma.png>,<code.png>,<diff.png> \
+  [--component <Name2>:<f>,<c>,<d>] ...
+```
+
+**Format details (exact, no improvisation)**:
+- `--component` value is `<Name>:<figma>,<code>,<diff>` — colon between name and files, comma between files. No spaces inside the value.
+- `<Name>` is validated as `^[A-Za-z0-9_-]+$` by the helper (rejects path traversal / shell metacharacters / commas / colons in names).
+- Required flags: `--owner`, `--repo`, `--pr`, and at least one `--component`. Missing any of these exits with code 2.
+- File paths should be the **per-component paths** (e.g. `.fe-design-cache/diff/Button/diff.png`), not the raw `.fe-design-cache/diff/diff.png` that fe-design-implement writes. The wrapper moves files into per-component subdirs immediately after each subagent returns (see SKILL.md workflow step 5).
+
+**Invocation hygiene.** When the wrapper calls this helper via the Bash tool, pass each `--component <Name>:<paths>` value as a single argv element — don't string-concatenate values into the command line. The same applies to `gh api` flags (`-F owner=<O>`); use `-F key=value` form so `gh` parses, not the shell.
+
+### Output
+
+JSON to stdout:
+
+```json
+{
+  "commitSha": "<40-char SHA>",
+  "ref": "refs/uploads/pulls/<N>",
+  "components": {
+    "Button":  { "figma": "<sha>", "code": "<sha>", "diff": "<sha>" },
+    "LoginForm": { ... }
+  },
+  "embedUrlTemplate": "https://github.com/<O>/<R>/blob/<commitSha>/{component}/{file}.png?raw=true"
+}
+```
+
+The wrapper uses `commitSha` + per-component names to template embed URLs into the PR body — no need to read the helper's source.
 
 ## Git Data API steps (what the helper does)
 

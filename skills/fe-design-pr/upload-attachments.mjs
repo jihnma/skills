@@ -22,8 +22,18 @@ function parseArgs(argv) {
     else if (flag === "--repo") args.repo = val;
     else if (flag === "--pr") args.pr = val;
     else if (flag === "--component") {
-      const [name, files] = val.split(":");
-      const [figma, code, diff] = files.split(",");
+      const colonIdx = val.indexOf(":");
+      if (colonIdx < 0) die(`--component requires <Name>:<figma>,<code>,<diff>`);
+      const name = val.slice(0, colonIdx);
+      const files = val.slice(colonIdx + 1);
+      // Name must be a safe component identifier — no path traversal, no shell
+      // metacharacters, no commas/colons that would corrupt the parse.
+      if (!/^[A-Za-z0-9_-]+$/.test(name)) {
+        die(`--component name must match /^[A-Za-z0-9_-]+$/, got: ${JSON.stringify(name)}`);
+      }
+      const parts = files.split(",");
+      if (parts.length !== 3) die(`--component files: expected 3 comma-separated paths, got ${parts.length}`);
+      const [figma, code, diff] = parts;
       args.components.push({ name, figma, code, diff });
     } else die(`unknown flag: ${flag}`);
   }
