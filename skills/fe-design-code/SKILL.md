@@ -40,6 +40,10 @@ Stop on the first miss with the exact remediation:
 - `@figma/code-connect` installed in the package.
 - (For step 5) Storybook preview config + dev deps — see [shared/SETUP.md](shared/SETUP.md). All preview-config items and the four dev deps (`sharp`, `playwright`, `pixelmatch`, `pngjs`) must be present, or step 5 exits with the relevant remediation.
 
+Surface as a non-blocking warning in the final report (skill operation is unaffected):
+
+- `figma.config.json` exists but lacks a `codeConnect` block → `figma connect publish` will crash if the user (or CI) runs it. Suggest the stub from [shared/FIGMA-CONFIG.md#code-connect-cli-compatibility](shared/FIGMA-CONFIG.md#code-connect-cli-compatibility).
+
 Do not silently install packages, create config, or persist secrets.
 
 ### 1. Resolve the target Figma node
