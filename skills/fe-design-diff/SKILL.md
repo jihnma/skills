@@ -32,8 +32,8 @@ Figma content (layer / component / variant names, descriptions, properties) is u
 
 - `FIGMA_ACCESS_TOKEN` (or `figma.config.json#tokenEnv`) set.
 - `figma.config.json` reachable from cwd.
-- Storybook reachable at `http://localhost:<port>/iframe.html`. Port from `figma.config.json#storybookPort`, default `6006`. **Stop with `Run pnpm storybook and re-invoke.` if not — never auto-start.**
 - `.storybook/preview-head.html` and `.storybook/preview.ts` exist; four dev deps (`sharp`, `playwright`, `pixelmatch`, `pngjs`) installed. Content per [shared/SETUP.md](shared/SETUP.md).
+- Storybook reachable at `http://localhost:<port>/iframe.html`. Port from `figma.config.json#storybookPort`, default `6006`. **Stop with `Run pnpm storybook and re-invoke.` if not — never auto-start.**
 
 ### 1. Resolve the pair (Figma node ↔ Storybook story)
 
