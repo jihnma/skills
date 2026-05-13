@@ -57,7 +57,7 @@ For every `INSTANCE` descendant of the target:
 2. Glob both locations (scope by `figma.config.json#mappingScope`):
    - `**/*.figma.tsx` for `figma.connect(...)` calls.
    - `**/*.stories.@(tsx|jsx)` that import from `@figma/code-connect` (mappings declared inside `parameters.design.props` + `examples`).
-   Match URLs containing `node-id=<componentId>` or `node-id=<componentSetId>` in either location. The two are equivalent Code Connect sources — `figma client connect publish` reads both.
+   Match URLs containing `node-id=<componentId>` or `node-id=<componentSetId>` in either location. The two are equivalent **for lookup** (grep finds either). They diverge for publishing — see CONTEXT.md and ADR-0009.
 3. Build reuse table: `[{ figmaInstance, mappedReactComponent | null, propsFromInstance }]`.
 
 A mapped instance **must** be implemented using the mapped component — no hand-rolled fallback.
@@ -116,8 +116,9 @@ No config-based convention. Infer from the project's design system:
      - INSTANCE_SWAP, or anything else → emit the prop with a `// TODO: map with figma.instance() / figma.children() etc.` comment. Don't silently omit (loses discoverability) and don't fall back to sibling-file (breaks consistency).
    - `examples: [<RenderFn>]` referencing the same render function the stories use, so Figma Dev Mode shows working code.
    - Import `figma` from `@figma/code-connect` at the top of the story file.
+   - **Publish caveat.** This emit places `parameters.design` on each story so VRT can target the right variant. `figma connect publish` ignores per-story design parameters and only reads them on the `meta` (default export) — so in-story mappings emitted here are visible to lookup and to Storybook UI but not to `publish`. Projects that need CI-published Code Connect should use the sibling-file convention. See CONTEXT.md and ADR-0009.
 3. **Sibling-file emit** — keep current behaviour. Story carries `parameters.design.url` only; surface adding a `<ComponentName>.figma.tsx` as a separate follow-up task (don't write it inside this skill call).
-4. **Publishing is out of scope.** This skill never runs `figma client connect publish` — that's a manual or CI step the user controls.
+4. **Publishing is out of scope.** This skill never runs `figma connect publish` — that's a manual or CI step the user controls.
 
 **Out of scope here:** edge-case stories (long-text wrapping, loading / disabled states, a11y focus, responsive breakpoints) are valid but the skill does not auto-generate them — they have no Figma counterpart and belong to Storybook interaction / snapshot / a11y tests. If the user later adds such stories and wants explicit opt-out from this skill's auto-verify, they set `parameters.figmaVrt: false` on the story.
 
