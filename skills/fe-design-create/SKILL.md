@@ -1,14 +1,14 @@
 ---
-name: fe-design-implement
+name: fe-design-create
 description: Convert a single Figma component (or component set) into a React component + Storybook story, then auto-verify visual match against the Figma source via the bundled VRT helper. Use when the user pastes a Figma node URL/ID and asks to implement it. Outputs file paths and a diff ratio.
 license: MIT
 ---
 
-# fe-design-implement
+# fe-design-create
 
 Converts one Figma node into code (component + story), then runs VRT to confirm the result matches.
 
-The VRT pipeline (Figma fetch + flatten, custom-viewport screenshot, pixelmatch, diff-image emit) is bundled as `~/.claude/skills/fe-design-verify/vrt.mjs`. This skill orchestrates code generation and delegates verification to that helper.
+The VRT pipeline (Figma fetch + flatten, custom-viewport screenshot, pixelmatch, diff-image emit) is bundled as `~/.claude/skills/fe-design-check/vrt.mjs`. This skill orchestrates code generation and delegates verification to that helper.
 
 ## When to use
 
@@ -95,7 +95,7 @@ No config-based convention. Infer from the project's design system:
 
 - Set `title` explicitly: `"<figmaCategoryPath joined with '/'>/<ComponentName>"` (e.g. `"Components/Button"`). Never rely on Storybook `autoTitle`.
 - One story per variant for `COMPONENT_SET`; one story for `COMPONENT`. Story names match `componentProperties` variant names.
-- **Each story declares its specific Figma variant** via `parameters.design.url` (or a sibling `.figma.tsx`). The URL points at the actual variant node id, not the parent `COMPONENT_SET`. A copy-pasted set URL on every story breaks the 1:1 mapping that `fe-design-verify` depends on (see ADR-0006).
+- **Each story declares its specific Figma variant** via `parameters.design.url` (or a sibling `.figma.tsx`). The URL points at the actual variant node id, not the parent `COMPONENT_SET`. A copy-pasted set URL on every story breaks the 1:1 mapping that `fe-design-check` depends on (see ADR-0006).
 - For a `COMPONENT_SET` input, fetch the child variant node ids once (`GET /v1/files/<fileId>/nodes?ids=<setId>`) and bind each generated story to its child. An optional matrix overview story may point at the `COMPONENT_SET` itself, but only if its rendered grid matches Figma's set-canvas layout.
 - CSF3 format.
 
@@ -125,10 +125,10 @@ No config-based convention. Infer from the project's design system:
 
 2. Compute `storyId` = lowercase + hyphenate of the story title, append `--<variant>` for the first or default variant.
 
-3. Run the VRT helper (bundled with `fe-design-verify`):
+3. Run the VRT helper (bundled with `fe-design-check`):
 
    ```sh
-   node ~/.claude/skills/fe-design-verify/vrt.mjs \
+   node ~/.claude/skills/fe-design-check/vrt.mjs \
      --figma-file=<fileId> \
      --figma-node=<nodeId> \
      --story-url="http://localhost:<port>/iframe.html?id=<storyId>&viewMode=story" \
@@ -136,7 +136,7 @@ No config-based convention. Infer from the project's design system:
      --ratio-threshold=<figma.config.json#vrtThreshold or 0.05>
    ```
 
-   `<W>x<H>` = the variant's `absoluteBoundingBox` from step 1 (integers). For `--ratio-threshold` calibration by story size, see `fe-design-verify` SKILL.md `## Threshold guidance`.
+   `<W>x<H>` = the variant's `absoluteBoundingBox` from step 1 (integers). For `--ratio-threshold` calibration by story size, see `fe-design-check` SKILL.md `## Threshold guidance`.
 
    The helper writes `figma.png`, `code.png`, `diff.png` to `.fe-design-cache/diff/` and prints JSON `{ verdict, ratio, ratioThreshold, mismatched, total, files }`. Exit codes: `0` pass, `1` fail, `2` setup error.
 
