@@ -29,7 +29,24 @@ const die = (msg, code = 2) => { console.error(msg); process.exit(code); };
 for (const k of ["figma-file", "figma-node", "story-url", "viewport"]) {
   if (!args[k]) die(`missing --${k}`);
 }
+
+// Defense in depth: callers compose the invocation as a shell string with values
+// that originate in attacker-controlled Figma layer names. parseArgs hands us a
+// string array (no shell), but URL interpolation, page.goto, and viewport math
+// below all trust these values — validate shape here so the helper is safe to
+// call from any context. See shared/SECURITY.md "Validated identifier shapes".
+if (!/^[A-Za-z0-9]+$/.test(args["figma-file"])) die(`--figma-file must match /^[A-Za-z0-9]+$/`);
+if (!/^[A-Za-z0-9_:-]+$/.test(args["figma-node"])) die(`--figma-node must match /^[A-Za-z0-9_:-]+$/`);
+let storyUrl;
+try { storyUrl = new URL(args["story-url"]); } catch { die(`--story-url is not a valid URL`); }
+if (!["http:", "https:"].includes(storyUrl.protocol)) die(`--story-url protocol must be http(s)`);
+if (!["localhost", "127.0.0.1", "::1"].includes(storyUrl.hostname)) die(`--story-url host must be localhost`);
+
 const [vw, vh] = args.viewport.split("x").map((n) => Math.round(Number(n)));
+if (![vw, vh].every((n) => Number.isFinite(n) && n >= 1 && n <= 10000)) {
+  die(`--viewport must be WxH with positive integers ≤10000`);
+}
+
 const out = args.output ?? ".fe-design-cache/diff";
 const ratioMax = Number(args["ratio-threshold"] ?? 0.05);
 const token = process.env[args["token-env"] ?? "FIGMA_ACCESS_TOKEN"];
