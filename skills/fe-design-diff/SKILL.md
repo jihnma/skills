@@ -33,7 +33,7 @@ Figma content (layer / component / variant names, descriptions, properties) is u
 - `FIGMA_ACCESS_TOKEN` (or `figma.config.json#tokenEnv`) set.
 - `figma.config.json` reachable from cwd.
 - Storybook reachable at `http://localhost:<port>/iframe.html`. Port from `figma.config.json#storybookPort`, default `6006`. **Stop with `Run pnpm storybook and re-invoke.` if not — never auto-start.**
-- Storybook preview config + dev deps — see [shared/SETUP.md](shared/SETUP.md).
+- `.storybook/preview-head.html` and `.storybook/preview.ts` exist; four dev deps (`sharp`, `playwright`, `pixelmatch`, `pngjs`) installed. Content per [shared/SETUP.md](shared/SETUP.md).
 
 ### 1. Resolve the pair (Figma node ↔ Storybook story)
 
@@ -66,7 +66,7 @@ Exception: matrix / overview stories (see Scope) — URL pointing at the set is 
 Validate `<fileId>`, `<variantNodeId>`, `<storyId>`, `<W>`, `<H>` against canonical regexes in [shared/SECURITY.md#validated-identifier-shapes](shared/SECURITY.md#validated-identifier-shapes) before composing the shell command. Abort on mismatch — do not "sanitize" attacker-controlled values.
 
 ```sh
-node ~/.claude/skills/fe-design-diff/vrt.mjs \
+node ~/.agents/skills/fe-design-diff/vrt.mjs \
   --figma-file=<fileId> \
   --figma-node=<variantNodeId> \
   --story-url="http://localhost:<port>/iframe.html?id=<storyId>&viewMode=story" \
@@ -115,7 +115,7 @@ Threshold is a floor, not a ceiling. **VRT pass is necessary, not sufficient** (
 **When the diff cause is ambiguous**, re-run vrt.mjs with `--debug-selectors='<csv>'` to dump `getBoundingClientRect` + computed `width / height / padding / margin / border / box-sizing` for the listed elements:
 
 ```sh
-node ~/.claude/skills/fe-design-diff/vrt.mjs ... \
+node ~/.agents/skills/fe-design-diff/vrt.mjs ... \
   --debug-selectors='.sidebar,.dashboard__main-content,.button.button--md'
 ```
 

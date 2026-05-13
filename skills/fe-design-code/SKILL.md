@@ -17,7 +17,7 @@ Stop on the first miss with exact remediation:
 - `FIGMA_ACCESS_TOKEN` (or `figma.config.json#tokenEnv`) is set.
 - `figma.config.json` exists at or above cwd.
 - `@figma/code-connect` installed in the package.
-- (Step 5) Storybook preview config + dev deps — see [shared/SETUP.md](shared/SETUP.md). All preview-config items and the four dev deps (`sharp`, `playwright`, `pixelmatch`, `pngjs`) must be present, or step 5 exits with the relevant remediation.
+- (Step 5) `.storybook/preview-head.html` and `.storybook/preview.ts` exist; four dev deps (`sharp`, `playwright`, `pixelmatch`, `pngjs`) installed. Content (body-margin reset, fullscreen layout, font-link) per [shared/SETUP.md](shared/SETUP.md). Step 5 exits with the relevant remediation on miss.
 
 Non-blocking warning (skill operation unaffected):
 
@@ -88,10 +88,11 @@ No config-based convention. Infer from the project's design system:
 **Code Connect convention (where mappings live)** — match the project, don't mix:
 
 1. **Detect** by inspecting the step-2 globs:
-   - `**/*.stories.@(tsx|jsx)` files import `@figma/code-connect` → **in-story** convention.
+   - `**/*.stories.@(tsx|jsx)` files import `@figma/code-connect` (meta-level mapping present) → **in-story** convention.
    - `**/*.figma.tsx` files only → **sibling-file** convention.
-   - Both present → ask the user once, record the answer under `## Code Connect convention` in `CLAUDE.md`.
-   - Neither (green-field) → **default to in-story**.
+   - `**/*.stories.@(tsx|jsx)` declare `parameters.design.url` only, no `@figma/code-connect` import → **URL-only**; ask once whether to keep URL-only (no meta-level `props` / `examples`) or upgrade new stories to publish-ready. Record under `## Code Connect convention` in `CLAUDE.md`.
+   - Both `@figma/code-connect` import and `.figma.tsx` present → ask once, record as above.
+   - Neither (green-field) → **default to in-story** (publish-ready, ADR-0010).
 2. **In-story emit** — two `parameters.design` placements in the same `.stories.tsx`:
 
    **a) Meta-level** (on `default export`). URL = `COMPONENT_SET` (or single `COMPONENT`).
@@ -121,7 +122,7 @@ No config-based convention. Infer from the project's design system:
 4. Run the VRT helper (bundled with `fe-design-diff`):
 
    ```sh
-   node ~/.claude/skills/fe-design-diff/vrt.mjs \
+   node ~/.agents/skills/fe-design-diff/vrt.mjs \
      --figma-file=<fileId> \
      --figma-node=<nodeId> \
      --story-url="http://localhost:<port>/iframe.html?id=<storyId>&viewMode=story" \
