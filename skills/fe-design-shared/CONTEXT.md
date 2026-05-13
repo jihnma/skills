@@ -10,7 +10,7 @@ _Avoid_: figma binding, figma mapping
 
 **sibling-file** / **in-story** (Code Connect conventions):
 Two places a Code Connect mapping can live. **sibling-file**: a separate `<Component>.figma.tsx` next to the component. **in-story**: `parameters.design` inside the component's `.stories.tsx` (the Storybook-native path; also carries `props` + `examples` from `@figma/code-connect`).
-The two are equivalent for **lookup** (the skill greps both for a matching `node-id=...`) and for **VRT** (the URL drives a per-story Figma export). They differ for **publishing**: `figma connect publish` reads `.figma.tsx` files, and only reads `.stories.tsx` when `parameters.design` lives on the `meta` (default export). Per-story `parameters.design` is invisible to publish — it's a Storybook display link only. This skill emits per-story for VRT precision and does not publish; publishing is the user's CI step. See ADR-0009.
+The two are equivalent for **lookup** (the skill greps both for a matching `node-id=...`) and for **VRT** (the URL drives a per-story Figma export). They differ for **publishing**: `figma connect publish` reads `.figma.tsx` files, and only reads `.stories.tsx` when `parameters.design` lives on the `meta` (default export). Per-story `parameters.design` is invisible to publish — it's a Storybook display link only. The skill emits both placements (meta-level for publish, per-story for VRT) but does not run publish itself — that's the user's CI step. See ADR-0009 and ADR-0010.
 A project picks one convention and sticks with it; mixing is detected and resolved per-project in `CLAUDE.md`.
 _Avoid_: Standalone mapping, Inline mapping (older names — superseded)
 
