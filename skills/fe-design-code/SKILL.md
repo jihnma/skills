@@ -61,10 +61,7 @@ No config-based convention. Infer from the project's design system:
 - Use the reuse table for matched `INSTANCE` children (import the mapped component, pass props derived from `componentProperties`).
 - For unmapped instances, emit reasonable markup, then ask the user (without blocking) whether to add a Code Connect mapping (separate task).
 - Apply design tokens from `figma.config.json#tokensPath` (or `src/tokens/`, `tokens.ts`, CSS vars, Tailwind theme) and Figma Variables. Prefer tokens over hardcoded values.
-- **MCP `get_design_context` output is normative for CSS structure** — write the literal equivalent of MCP's tokens. Pixel-equivalent substitutions (e.g. `height: 40px` for `padding-block: 10px`) are an anti-pattern. **Exception** — when literal CSS has a box-model side effect contradicting visual intent (e.g. accumulated `border-bottom` shifting a list), substitute equivalent CSS (`box-shadow: inset 0 -1px 0 <c>` for dividers) and note in the report. See ADR-0007.
-
-  **REST-augmented checks** — MCP drops these fields; fetch via REST when present. Closed set — don't extend.
-
+- **REST-augmented checks (apply before writing CSS).** MCP drops these fields; the literal MCP CSS is wrong when any apply. Closed set — don't extend.
   - **`box-sizing: border-box`** on elements with padding + sized dimension. Figma puts borders inside the box; CSS defaults to `content-box`. Add `* { box-sizing: border-box; }` if the project has no global reset.
   - **`strokes[].strokeAlign`** before writing `border`. MCP outputs `border: <w>px <c>` regardless of alignment:
     - `INSIDE` + single SOLID + no `individualStrokeWeights` + no `dashPattern` → `box-shadow: inset 0 0 0 <w> <c>` (preserves bbox + padding; prefer a shared utility like Tailwind `ring-*` if available).
@@ -74,7 +71,7 @@ No config-based convention. Infer from the project's design system:
     - `HUG` → omit the dimension; let content drive (`padding-block` for vertical HUG, `padding-inline` for horizontal HUG).
     - `FIXED` → honor literally.
     - `FILL` → `width: 100%` / `height: 100%` (or `flex: 1` in an auto-layout parent).
-
+- **MCP `get_design_context` is normative for CSS structure after the REST checks above mutate the plan.** Write the literal equivalent of (possibly substituted) MCP tokens. Pixel-equivalent substitutions (e.g. `height: 40px` for `padding-block: 10px`) are an anti-pattern. **Exception** — when literal CSS has a box-model side effect contradicting visual intent (e.g. accumulated `border-bottom` shifting a list), substitute equivalent CSS (`box-shadow: inset 0 -1px 0 <c>` for dividers) and note in the report. See ADR-0007.
 - **When updating an existing component**, do not silently preserve a divergent structure. Surface divergences in the report ("equivalent now but diverges if line-height changes; refactor? Y/n"). Don't refactor without asking, don't silently propagate the legacy pattern either.
 
 **`<ComponentName>.stories.tsx`**:
@@ -144,7 +141,7 @@ No config-based convention. Infer from the project's design system:
 
 ## Rules
 
-- **Bounded auto-fix on VRT failure.** When `diff.png` points to a clear, single-cause defect (e.g. missing `box-sizing: border-box`, cumulative border drift, wrong `border-radius`), apply one targeted fix and re-run VRT. Up to **3 iterations** within a single skill call. Each iteration must have a diagnostic justification (which diff pattern, which cause) and be summarised in the final report. Stop and report if (a) 3 iterations have elapsed without convergence, (b) the diagnostic is ambiguous, or (c) the fix would diverge from MCP literal without a box-model justification (ADR-0007). **Never** tune `vrtThreshold` upward to force a pass.
+- **Bounded auto-fix on VRT failure.** When `diff.png` points to a clear, single-cause defect (e.g. missing `box-sizing: border-box`, cumulative border drift, wrong `border-radius`, `strokeAlign: INSIDE` emitted as literal `border` under `border-box`), apply one targeted fix and re-run VRT. Up to **3 iterations** within a single skill call. Each iteration must have a diagnostic justification (which diff pattern, which cause) and be summarised in the final report. Stop and report if (a) 3 iterations have elapsed without convergence, (b) the diagnostic is ambiguous, or (c) the fix would diverge from MCP literal without a box-model justification (ADR-0007). **Never** tune `vrtThreshold` upward to force a pass.
 - **Page / composite components: don't mutate base components.** When the target composes existing mapped components (e.g. a dashboard using `Button` and `BalanceCard`), apply scoped overrides in the new component's CSS, never edit the base files. Surface base divergences (e.g. "`Button` has `min-width: 89px`; Figma uses HUG sizing here") in the final report as recommended upstream fixes — don't propagate silently, don't fix silently.
 
 ## Failure paths (not covered by individual steps)

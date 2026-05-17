@@ -107,12 +107,13 @@ Pattern heuristics:
 | Scattered red across a uniform color region | Color mismatch — token resolution gone wrong | Check Figma Variables → CSS variable binding |
 | Large red mass over text glyphs | Wrong font build (e.g. Google Fonts Inter vs Figma's rsms.me Inter Variable) | Swap to Figma's font build in preview-head.html |
 | Glyphs shifted ~1px while outline aligns | Font hinting / sub-pixel rendering | Accept if shape matches; fail if cumulative |
+| Every interior element ghosted 1–2px in the same direction; outer container edges clean | `strokeAlign: INSIDE` modeled as `border` under `box-sizing: border-box` shrinks the content box by `2 × strokeWeight` | Replace `border` with `box-shadow: inset 0 0 0 <w> <c>` per `fe-design-code` Step 4. **Structural — fail even when ratio < threshold.** |
 
 Anything labeled "structural" overrides the ratio: **fail even when ratio < threshold**.
 
 Threshold is a floor, not a ceiling. **VRT pass is necessary, not sufficient** (ADR-0007). For hand-written code, inspect `getComputedStyle` against Figma's `paddingTop/Bottom`, `cornerRadius`, `itemSpacing`, `strokeWeight` when in doubt.
 
-**When the diff cause is ambiguous**, re-run vrt.mjs with `--debug-selectors='<csv>'` to dump `getBoundingClientRect` + computed `width / height / padding / margin / border / box-sizing` for the listed elements:
+**When the diff cause is ambiguous** — or when residual is diffuse with no localized hotspot (signature of a uniform sub-pixel offset, e.g. `strokeAlign: INSIDE` rendered as literal `border`) — re-run vrt.mjs with `--debug-selectors='<csv>'` to dump `getBoundingClientRect` + computed `width / height / padding / margin / border / box-sizing` for the listed elements:
 
 ```sh
 node ~/.agents/skills/fe-design-diff/vrt.mjs ... \
