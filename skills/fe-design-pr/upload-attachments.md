@@ -27,7 +27,7 @@ node ${CLAUDE_PLUGIN_ROOT}/skills/fe-design-pr/upload-attachments.mjs \
 - `--component` value is `<Name>:<figma>,<code>,<diff>` — colon between name and files, comma between files. No spaces inside the value.
 - `<Name>` is validated as `^[A-Za-z0-9_-]+$` by the helper (rejects path traversal / shell metacharacters / commas / colons in names).
 - Required flags: `--owner`, `--repo`, `--pr`, and at least one `--component`. Missing any of these exits with code 2.
-- File paths should be the **per-component paths** (e.g. `.fe-design-cache/diff/Button/diff.png`), not the raw `.fe-design-cache/diff/diff.png` that fe-design-code writes. The wrapper moves files into per-component subdirs immediately after each subagent returns (see SKILL.md workflow step 5).
+- File paths should be the **per-component paths** (e.g. `.fe-design-cache/diff/Button/diff.png`), not the raw `.fe-design-cache/diff/diff.png` that fe-design-code writes. The wrapper moves files into per-component subdirs immediately after each `fe-design-code` invocation returns (see SKILL.md workflow step 5).
 
 **Invocation hygiene.** When the wrapper calls this helper via the Bash tool, pass each `--component <Name>:<paths>` value as a single argv element — don't string-concatenate values into the command line. The same applies to `gh api` flags (`-F owner=<O>`); use `-F key=value` form so `gh` parses, not the shell.
 
