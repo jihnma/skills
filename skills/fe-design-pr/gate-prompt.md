@@ -32,7 +32,7 @@ For `list-only`, the user replies with a comma-separated list of component names
 |---|---|---|
 | Non-COMPONENT nodes | Skip (warn) | Skip |
 | Mixed Code Connect | Ask | Exit with remediation (set `## Code Connect convention` in `CLAUDE.md`) |
-| Green-field | Ask once; subagent persists answer | Exit with remediation |
+| Green-field | Ask once; wrapper persists answer for subsequent components | Exit with remediation |
 | Intent ↔ Figma contradiction (e.g. "secondary" in body, primary variant linked) | Surface, ask which is canonical | Exit |
 | Existing PR found | Update in place | Update in place |
 | Component listed before but missing in current issue | Surface, ask keep/remove | Keep (no auto-delete) |

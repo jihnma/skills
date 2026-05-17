@@ -4,9 +4,5 @@
     "./skills/fe-design-code",
     "./skills/fe-design-diff",
     "./skills/fe-design-pr"
-  ],
-  "agents": [
-    "./agents/fe-design-code-agent.md",
-    "./agents/fe-design-diff-agent.md"
   ]
 }

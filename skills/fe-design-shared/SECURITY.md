@@ -32,7 +32,7 @@ The skills derive several identifiers from untrusted sources. Before interpolati
 | Figma node ID (API form) | `^[A-Za-z0-9_:-]+$` | URL `node-id=123-456` → API `123:456`; instance prefix `I` allowed |
 | Component name | `^[A-Za-z0-9_-]+$` | Inferred from Figma component name |
 | Storybook story ID | `^[A-Za-z0-9_-]+(--[A-Za-z0-9_-]+)?$` | `<kind>--<variant>` kebab-case |
-| VRT diff artifact path | `^\.fe-design-cache/diff/[^/]+\.png$` | Subagent reply (already enforced by `fe-design-pr` step 5) |
+| VRT diff artifact path | `^\.fe-design-cache/diff/[^/]+\.png$` | `fe-design-code` output (already enforced by `fe-design-pr` step 5) |
 
 A value that fails its regex is the attack signal — abort with a clear error rather than "sanitizing" the input. Do not HTML-escape strings that flow into JSX (React escapes by default; double-escaping breaks the UI).
 
