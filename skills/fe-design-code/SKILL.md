@@ -133,6 +133,25 @@ No config-based convention. Infer from the project's design system:
 
 ### 6. Report
 
+Final message starts with a single fenced ```json block matching this schema:
+
+```json
+{
+  "verdict": "pass" | "fail" | "setup-error",
+  "ratio": 0.0084,
+  "files": ["<absolute path to component>", "<absolute path to story>"],
+  "diffArtifacts": {
+    "figma": ".fe-design-cache/diff/figma.png",
+    "code":  ".fe-design-cache/diff/code.png",
+    "diff":  ".fe-design-cache/diff/diff.png"
+  },
+  "qualitative": "<one-sentence diff description, e.g. 'Antialiasing only'>",
+  "remediation": "<setup-error only: exact command the user must run>"
+}
+```
+
+`diffArtifacts` are the literal helper outputs from step 5 — batch callers move them to per-component subdirs (see `fe-design-pr` SKILL.md step 5). After the JSON block, prose:
+
 - Paths of files written (component + story).
 - Diff ratio + percentage.
 - One-paragraph qualitative diff description.
