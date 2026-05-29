@@ -1,8 +1,0 @@
-{
-  "name": "jihnma-skills",
-  "skills": [
-    "./skills/fe-design-code",
-    "./skills/fe-design-diff",
-    "./skills/fe-design-pr"
-  ]
-}

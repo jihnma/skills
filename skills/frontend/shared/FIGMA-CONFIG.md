@@ -1,0 +1,99 @@
+# Figma Config
+
+`figma.config.json` is the per-project (or per-package, in monorepos) configuration for the frontend skills.
+
+## Single-package layout
+
+```json
+{
+  "fileId": "qkxc...",
+  "tokenEnv": "FIGMA_ACCESS_TOKEN",
+  "cacheDir": ".figma-react-cache",
+  "tokensPath": "src/ui/tokens.ts",
+  "vrtThreshold": 0.05,
+  "storybookPort": 6006,
+  "codeConnect": {
+    "parser": "react",
+    "include": ["src/**/*.tsx"],
+    "exclude": ["**/*.stories.tsx", "**/*.test.tsx", "node_modules/**"]
+  }
+}
+```
+
+## Monorepo layout
+
+**Root config** — declares file aliases and shared options:
+
+```json
+{
+  "tokenEnv": "FIGMA_ACCESS_TOKEN",
+  "cacheDir": ".figma-react-cache",
+  "files": {
+    "ds":    "qkxc...A7",
+    "app-1": "abc...",
+    "app-2": "def..."
+  },
+  "mappingScope": "monorepo"
+}
+```
+
+**Per-package config** — extends root, picks an alias, overrides as needed:
+
+```json
+{
+  "extends": "../../figma.config.json",
+  "fileId": "ds"
+}
+```
+
+- `extends` resolves relative to the package config.
+- Deep-merges keys; per-package values win.
+- `fileId` may be either a raw Figma file id or an alias from the root's `files` map.
+
+## Field reference
+
+| Field | Type | Where | Notes |
+|---|---|---|---|
+| `extends` | string | per-package | Relative path to root config. |
+| `fileId` | string | per-package | Raw id or alias. Required. |
+| `files` | `Record<string, string>` | root | Alias → Figma fileId. |
+| `tokenEnv` | string | either | Env var name for Figma access token. Default `"FIGMA_ACCESS_TOKEN"`. |
+| `cacheDir` | string | either | Default `.figma-react-cache`. `vrt.mjs` writes `<cacheDir>/diff/{figma,code,diff}.png` (overwritten on each run, per-package in monorepos). Should be in `.gitignore`. |
+| `tokensPath` | string | per-package | Path to design tokens file. Default `"src/ui/tokens.ts"`. |
+| `vrtThreshold` | number | per-package | Diff ratio threshold (0–1) for VRT. Default `0.05`. Calibration by story size: see `verify-figma-match` SKILL.md `## Threshold guidance`. |
+| `storybookPort` | number | per-package | Local Storybook port. Default `6006`. |
+| `mappingScope` | `"monorepo" \| "package"` | root | Default `"monorepo"` if root has `files`, else `"package"`. |
+| `codeConnect` | object | per-package | Code Connect parser config. **Required if you run `figma connect publish`** — see [Code Connect CLI compatibility](#code-connect-cli-compatibility) below. |
+
+## Code Connect CLI compatibility
+
+The frontend skills do not invoke `figma connect publish` — it's the user's CI step (see ADR-0009 and `figma-to-react` SKILL.md step 4.4). However, if a `figma.config.json` exists in your repo, the Code Connect CLI auto-discovers it and **crashes when the `codeConnect` block is missing**:
+
+> `TypeError: Cannot read properties of undefined (reading 'include')` at `checkForLegacyConfig`
+
+This is upstream-side — the CLI destructures `config.codeConnect` without a null-check (`@figma/code-connect@1.4.4` `dist/connect/project.js:151`). Until a fix lands, add a minimal stub so `figma connect publish` runs:
+
+```json
+{
+  "codeConnect": {
+    "parser": "react",
+    "include": ["src/**/*.tsx"],
+    "exclude": ["**/*.stories.tsx", "**/*.test.tsx", "node_modules/**"]
+  }
+}
+```
+
+Adjust `include` / `exclude` to match where your `.figma.tsx` files (or `.stories.tsx` files with meta-level `parameters.design`) actually live. The skill never reads this block — only the CLI does.
+
+## Resolution order
+
+1. Load the nearest `figma.config.json` walking up from cwd.
+2. If it has `extends`, load and merge the parent config.
+3. Apply CLI overrides where supported (e.g. `vrt.mjs --ratio-threshold=...`).
+
+Per-package values always win over root values for the same key.
+
+## Rules
+
+- **`fileId` is required.** Either a raw id or an alias listed in the root's `files`.
+- **Don't commit secrets.** Tokens go in `.env`, not `figma.config.json`.

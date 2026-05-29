@@ -1,0 +1,18 @@
+# Local grep is the source of truth for Code Connect lookup; MCP `get_code_connect_map` is not used
+
+`figma-to-react` step 2 (and the equivalent procedure in `verify-figma-match`) resolves which React components are already mapped to Figma `INSTANCE` children before writing markup. The Figma MCP exposes `get_code_connect_map` for this; we deliberately do not use it. Lookup walks the local filesystem — `**/*.figma.tsx` for `figma.connect(...)` URLs and `**/*.stories.@(tsx|jsx)` for `parameters.design.url` — and matches `node-id=<componentId|componentSetId>`. Three properties of MCP misalign with this skill's needs:
+
+1. **MCP only sees published mappings.** `get_code_connect_map` resolves entries that have been pushed to a Figma library via `figma connect publish`; unpublished libraries return empty (and `add_code_connect_map` errors with `CODE_CONNECT_NO_LIBRARY_FOUND`). When `design-issue-to-pr` loops `figma-to-react` over multiple components in a single run, downstream components reference upstream-just-emitted ones as INSTANCEs — those mappings are unpublished by definition. MCP would silently miss them and the agent would invent markup. Local grep sees them the moment the file is written.
+
+2. **Per-story in-story mappings are publish-invisible.** `figma connect publish`'s Storybook parser only ingests `parameters.design` on the `meta` (default export), not on individual stories — verified against `@figma/code-connect@1.4.4` `dist/storybook/convert.js:188-248` and an empirical dry-run. The skill emits per-story `parameters.design` for VRT precision (each variant must point at its own Figma node — see ADR-0006); even after ADR-0010 adds meta-level emission for publish, the per-story layer remains MCP-invisible. Local grep finds it regardless of publish state or placement.
+
+3. **MCP doesn't return the prop-mapping AST.** `get_code_connect_map` returns `componentName, source, snippet, snippetImports, snippetNestedFunctions, version, label` — the rendered snippet, not the `figma.connect({ props: { ... } })` declaration. The skill needs that declaration to translate Figma `componentProperties` overrides into React props. MCP would replace one part of the pipeline with another but not eliminate the local file read; the net effect is one extra network round-trip and one more silent-empty failure mode.
+
+Sources: [Figma MCP – Tools and prompts](https://developers.figma.com/docs/figma-mcp-server/tools-and-prompts/), [code-connect#284](https://github.com/figma/code-connect/issues/284), [Figma Forum – get_code_connect_map returns empty](https://forum.figma.com/report-a-problem-6/figma-mcp-get-code-connect-map-return-empty-42405).
+
+## Consequences
+
+- Lookup is deterministic and works in unpublished state — `design-issue-to-pr`'s green-field flow can emit a `.stories.tsx` and reuse it as a mapped INSTANCE source for the next component in the same run, without a publish round-trip.
+- The skill's only Figma MCP usage is `get_design_context` / `get_screenshot` / `get_metadata` for the active node (see ADR-0007). Lookup behaves identically against the local-only and remote Figma MCP servers, and on accounts without library publishing access.
+- Per-story `parameters.design` is **lookup-valid but publish-invisible** — see the term definition in CONTEXT.md. ADR-0010 makes `figma-to-react` emit publish-ready files by default (sibling-file `.figma.tsx`, or meta-level `parameters.design` in addition to per-story); the skill still never runs `figma connect publish` itself.
+- Revisit if either changes: (a) `get_code_connect_map` surfaces unpublished mappings or returns the prop-mapping AST, or (b) `figma connect publish` starts reading per-story design parameters.

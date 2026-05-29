@@ -1,0 +1,15 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Frontend",
+      "description": "Turn Figma designs into React + Storybook code, verify visual match, and ship issues as PRs.",
+      "skills": [
+        "figma-to-react",
+        "verify-figma-match",
+        "design-issue-to-pr"
+      ]
+    }
+  ]
+}
