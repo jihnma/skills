@@ -39,4 +39,4 @@ For `list-only`, the user replies with a comma-separated list of component names
 
 ## Why batch
 
-Each fe-design-code call would otherwise stop on green-field / mixed-CC / FRAME-vs-COMPONENT. Pre-detecting once and answering once keeps the loop unattended; mid-loop prompts defeat the wrapper's purpose.
+Each figma-to-react call would otherwise stop on green-field / mixed-CC / FRAME-vs-COMPONENT. Pre-detecting once and answering once keeps the loop unattended; mid-loop prompts defeat the wrapper's purpose.

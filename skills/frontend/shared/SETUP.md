@@ -1,6 +1,6 @@
 # Setup
 
-Shared prerequisites for the `fe-design-*` skills. Both `fe-design-code` and `fe-design-diff` link here from their precheck steps.
+Shared prerequisites for the frontend skills. Both `figma-to-react` and `verify-figma-match` link here from their precheck steps.
 
 ## Storybook preview config
 

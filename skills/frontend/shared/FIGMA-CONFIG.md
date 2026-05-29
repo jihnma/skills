@@ -1,6 +1,6 @@
 # Figma Config
 
-`figma.config.json` is the per-project (or per-package, in monorepos) configuration for fe-design-* skills.
+`figma.config.json` is the per-project (or per-package, in monorepos) configuration for the frontend skills.
 
 ## Single-package layout
 
@@ -8,7 +8,7 @@
 {
   "fileId": "qkxc...",
   "tokenEnv": "FIGMA_ACCESS_TOKEN",
-  "cacheDir": ".fe-design-cache",
+  "cacheDir": ".figma-react-cache",
   "tokensPath": "src/ui/tokens.ts",
   "vrtThreshold": 0.05,
   "storybookPort": 6006,
@@ -27,7 +27,7 @@
 ```json
 {
   "tokenEnv": "FIGMA_ACCESS_TOKEN",
-  "cacheDir": ".fe-design-cache",
+  "cacheDir": ".figma-react-cache",
   "files": {
     "ds":    "qkxc...A7",
     "app-1": "abc...",
@@ -58,16 +58,16 @@
 | `fileId` | string | per-package | Raw id or alias. Required. |
 | `files` | `Record<string, string>` | root | Alias → Figma fileId. |
 | `tokenEnv` | string | either | Env var name for Figma access token. Default `"FIGMA_ACCESS_TOKEN"`. |
-| `cacheDir` | string | either | Default `.fe-design-cache`. `vrt.mjs` writes `<cacheDir>/diff/{figma,code,diff}.png` (overwritten on each run, per-package in monorepos). Should be in `.gitignore`. |
+| `cacheDir` | string | either | Default `.figma-react-cache`. `vrt.mjs` writes `<cacheDir>/diff/{figma,code,diff}.png` (overwritten on each run, per-package in monorepos). Should be in `.gitignore`. |
 | `tokensPath` | string | per-package | Path to design tokens file. Default `"src/ui/tokens.ts"`. |
-| `vrtThreshold` | number | per-package | Diff ratio threshold (0–1) for VRT. Default `0.05`. Calibration by story size: see `fe-design-diff` SKILL.md `## Threshold guidance`. |
+| `vrtThreshold` | number | per-package | Diff ratio threshold (0–1) for VRT. Default `0.05`. Calibration by story size: see `verify-figma-match` SKILL.md `## Threshold guidance`. |
 | `storybookPort` | number | per-package | Local Storybook port. Default `6006`. |
 | `mappingScope` | `"monorepo" \| "package"` | root | Default `"monorepo"` if root has `files`, else `"package"`. |
 | `codeConnect` | object | per-package | Code Connect parser config. **Required if you run `figma connect publish`** — see [Code Connect CLI compatibility](#code-connect-cli-compatibility) below. |
 
 ## Code Connect CLI compatibility
 
-`fe-design-*` skills do not invoke `figma connect publish` — it's the user's CI step (see ADR-0009 and `fe-design-code` SKILL.md step 4.4). However, if a `figma.config.json` exists in your repo, the Code Connect CLI auto-discovers it and **crashes when the `codeConnect` block is missing**:
+The frontend skills do not invoke `figma connect publish` — it's the user's CI step (see ADR-0009 and `figma-to-react` SKILL.md step 4.4). However, if a `figma.config.json` exists in your repo, the Code Connect CLI auto-discovers it and **crashes when the `codeConnect` block is missing**:
 
 > `TypeError: Cannot read properties of undefined (reading 'include')` at `checkForLegacyConfig`
 

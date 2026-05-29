@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// fe-design-diff VRT helper.
+// verify-figma-match VRT helper.
 //   node vrt.mjs --figma-file=ID --figma-node=ID --story-url=URL --viewport=WxH
-//                [--ratio-threshold=0.05] [--token-env=FIGMA_ACCESS_TOKEN] [--output=.fe-design-cache/diff]
+//                [--ratio-threshold=0.05] [--token-env=FIGMA_ACCESS_TOKEN] [--output=.figma-react-cache/diff]
 // Exit: 0 pass, 1 fail (ratio over threshold), 2 setup error.
 // devDeps (sharp, playwright, pixelmatch, pngjs) are resolved from process.cwd(),
 // so install them in the project being verified — this script runs from any location.
@@ -47,7 +47,7 @@ if (![vw, vh].every((n) => Number.isFinite(n) && n >= 1 && n <= 10000)) {
   die(`--viewport must be WxH with positive integers ≤10000`);
 }
 
-const out = args.output ?? ".fe-design-cache/diff";
+const out = args.output ?? ".figma-react-cache/diff";
 const ratioMax = Number(args["ratio-threshold"] ?? 0.05);
 const token = process.env[args["token-env"] ?? "FIGMA_ACCESS_TOKEN"];
 if (!token) die(`Figma token env var not set`);
