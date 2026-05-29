@@ -128,8 +128,8 @@ case "$CMD" in
     echo "  Manually verify both in a logged-in browser tab."
 
     echo
-    echo "If all three checks pass → refs/uploads/pulls/<N> is safe for fe-design-pr."
-    echo "If anything failed → switch fe-design-pr to refs/heads/attachments/pr-<N>."
+    echo "If all three checks pass → refs/uploads/pulls/<N> is safe for design-issue-to-pr."
+    echo "If anything failed → switch design-issue-to-pr to refs/heads/attachments/pr-<N>."
     ;;
 
   *)
